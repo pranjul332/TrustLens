@@ -6,7 +6,7 @@ from fastapi import Request, HTTPException, status, Depends
 from collections import defaultdict
 
 from config import settings
-from auth import verify_token
+from utils.auth import verify_token
 
 # Rate limiting storage (in-memory for now, use Redis in production)
 rate_limit_storage = defaultdict(list)

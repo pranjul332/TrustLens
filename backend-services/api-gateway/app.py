@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 from config import settings
-from routes import auth, health
+from routes import auth, analysis, health
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,7 +22,7 @@ app = FastAPI(
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,6 +30,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(analysis.router, tags=["Analysis"])
 app.include_router(health.router, tags=["Health"])
 
 @app.get("/")

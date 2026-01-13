@@ -5,7 +5,7 @@ from fastapi import APIRouter
 import logging
 
 from models import LoginRequest, RegisterRequest, TokenResponse
-from auth import create_access_token
+from utils.auth import create_access_token
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
