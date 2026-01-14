@@ -1,6 +1,6 @@
 """
 Routes package initialization
 """
-from . import  health
+from . import cache, health
 
-__all__ = ["health"]
+__all__ = ["cache", "health" ]

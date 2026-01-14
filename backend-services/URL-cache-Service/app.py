@@ -5,7 +5,8 @@ from fastapi import FastAPI
 import logging
 
 from config import settings
-from routes import  health
+from db.database import startup_db_client, shutdown_db_client
+from routes import cache, health
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -18,9 +19,13 @@ app = FastAPI(
     description="Manages product analysis report caching with TTL"
 )
 
+# Include routers
+app.include_router(cache.router, tags=["Cache"])
 app.include_router(health.router, tags=["Health"])
 
 # Event handlers
+app.add_event_handler("startup", startup_db_client)
+app.add_event_handler("shutdown", shutdown_db_client)
 
 @app.get("/")
 async def root():
