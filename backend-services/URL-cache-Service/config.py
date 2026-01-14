@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     """Application settings"""
     
     # MongoDB Configuration
-    MONGO_URL: str = os.getenv("MONGO_URL", "mongodb://mongodb:27017")
+    MONGO_URI: str = os.getenv("MONGO_URI", "mongodb://mongodb:27017")
     MONGO_DB: str = os.getenv("MONGO_DB", "fake_review_platform")
     CACHE_COLLECTION: str = "report_cache"
     

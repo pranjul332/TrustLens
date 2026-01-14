@@ -2,59 +2,36 @@
 MongoDB connection management and database operations
 """
 from motor.motor_asyncio import AsyncIOMotorClient
-from typing import Optional, Dict, Any
-from datetime import datetime, timedelta
+from typing import Dict, Any, Optional
 import logging
-
 from config import settings
 
 logger = logging.getLogger(__name__)
 
-# MongoDB client (initialized on startup)
 mongo_client: Optional[AsyncIOMotorClient] = None
-db = None
 
 
 async def startup_db_client():
-    """Initialize MongoDB connection and create indexes"""
-    global mongo_client, db
-    
-    try:
-        mongo_client = AsyncIOMotorClient(settings.MONGO_URL)
-        db = mongo_client[settings.MONGO_DB]
-        
-        # Create indexes
-        collection = db[settings.CACHE_COLLECTION]
-        
-        # Index on url_hash for fast lookups
-        await collection.create_index("url_hash", unique=True)
-        
-        # TTL index - MongoDB will auto-delete expired documents
-        await collection.create_index(
-            "expires_at",
-            expireAfterSeconds=0
-        )
-        
-        # Index for cleanup queries
-        await collection.create_index("cached_at")
-        
-        logger.info("MongoDB connected and indexes created")
-        
-    except Exception as e:
-        logger.error(f"MongoDB connection failed: {str(e)}")
-        raise
+    global mongo_client
+    mongo_client = AsyncIOMotorClient(settings.MONGO_URI)
+    logger.info("MongoDB client initialized")
 
 
 async def shutdown_db_client():
-    """Close MongoDB connection"""
     global mongo_client
     if mongo_client:
         mongo_client.close()
-        logger.info("MongoDB connection closed")
+        logger.info("MongoDB client closed")
+
+
+def get_db():
+    if mongo_client is None:
+        raise RuntimeError("MongoDB client not initialized")
+    return mongo_client[settings.MONGO_DB]
 
 
 def get_collection():
-    """Get the cache collection"""
+    db = get_db()
     return db[settings.CACHE_COLLECTION]
 
 
