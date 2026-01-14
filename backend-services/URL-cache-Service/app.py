@@ -6,7 +6,7 @@ import logging
 
 from config import settings
 from db.database import startup_db_client, shutdown_db_client
-from routes import cache, health
+from routes import cache, health, stats
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,6 +22,7 @@ app = FastAPI(
 # Include routers
 app.include_router(cache.router, tags=["Cache"])
 app.include_router(health.router, tags=["Health"])
+app.include_router(stats.router, tags=["Statistics"])
 
 # Event handlers
 app.add_event_handler("startup", startup_db_client)
