@@ -1,13 +1,10 @@
-"""
-Configuration settings for URL Cache Service
-"""
 import os
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
     """Application settings"""
-    
+
     # MongoDB Configuration
     MONGO_URI: str = os.getenv("MONGO_URI", "mongodb://mongodb:27017")
     MONGO_DB: str = os.getenv("MONGO_DB", "fake_review_platform")

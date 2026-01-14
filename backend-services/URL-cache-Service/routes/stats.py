@@ -1,6 +1,3 @@
-"""
-Cache statistics routes
-"""
 from fastapi import APIRouter, HTTPException, status
 import logging
 
