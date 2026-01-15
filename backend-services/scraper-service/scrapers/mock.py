@@ -6,7 +6,7 @@ import random
 import logging
 
 from models import Review, ProductMetadata, ScrapeResponse
-from utils import detect_platform
+from utils.utils import detect_platform
 
 logger = logging.getLogger(__name__)
 

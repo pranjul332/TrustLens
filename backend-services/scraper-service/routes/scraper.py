@@ -77,8 +77,8 @@ async def scrape_reviews(request: ScrapeRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Scraping failed: {str(e)}")
+        logger.exception("Scraping failed with stacktrace")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Scraping failed: {str(e)}"
-        )
+        status_code=500,
+        detail="Scraping failed. Check server logs."
+    )

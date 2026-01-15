@@ -22,7 +22,7 @@ async def health_check():
         },
         "configuration": {
             "scrapingbee_configured": settings.is_scrapingbee_configured,
-            "anthropic_configured": settings.is_anthropic_configured,
+            "OpenAI_configured": settings.is_openai_configured,
             "max_reviews": settings.MAX_REVIEWS_TO_ANALYZE
         }
     }
