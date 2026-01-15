@@ -31,6 +31,7 @@ async def root():
         "service": "Hybrid Scraper Service",
         "version": "2.0.0",
         "status": "healthy",
+        "llm_provider": "OpenAI (ChatGPT)",
         "scraping_methods": {
             "manual": {
                 "platforms": ["amazon", "flipkart"],
@@ -41,9 +42,11 @@ async def root():
             "llm": {
                 "platforms": ["any e-commerce site"],
                 "speed": "moderate (5-10 seconds)",
-                "cost": "free tier: 1000 requests",
+                "cost": "free tier: 1000 requests (ScrapingBee)",
                 "reliability": "excellent",
-                "enabled": settings.is_llm_scraping_enabled
+                "enabled": settings.is_llm_scraping_enabled,
+                "provider": "OpenAI ChatGPT",
+                "model": settings.OPENAI_MODEL
             },
             "mock": {
                 "platforms": ["all (testing)"],

@@ -1,5 +1,5 @@
 """
-LLM-powered universal scraper using ScrapingBee + Claude
+LLM-powered universal scraper using ScrapingBee + ChatGPT
 Works with any e-commerce site
 """
 from typing import Dict, Any
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class UniversalLLMScraper:
-    """AI-powered scraper using ScrapingBee + Claude for any e-commerce site"""
+    """AI-powered scraper using ScrapingBee + ChatGPT for any e-commerce site"""
     
     def __init__(self):
         self.scrapingbee_url = settings.SCRAPINGBEE_URL
@@ -31,7 +31,7 @@ class UniversalLLMScraper:
             # Step 1: Fetch HTML with ScrapingBee
             html_content = await self._fetch_with_scrapingbee(url)
             
-            # Step 2: Extract data using Claude
+            # Step 2: Extract data using ChatGPT
             extracted_data = await self._extract_with_llm(html_content, platform, max_reviews)
             
             processing_time = (datetime.utcnow() - start_time).total_seconds()
@@ -81,11 +81,11 @@ class UniversalLLMScraper:
             return response.text
     
     async def _extract_with_llm(self, html: str, platform: str, max_reviews: int) -> Dict[str, Any]:
-        """Extract structured data using Claude API"""
-        if not settings.is_anthropic_configured:
+        """Extract structured data using OpenAI API"""
+        if not settings.is_openai_configured:
             raise HTTPException(
                 status_code=status.HTTP_501_NOT_IMPLEMENTED,
-                detail="Anthropic API key not configured. Set ANTHROPIC_API_KEY environment variable."
+                detail="OpenAI API key not configured. Set OPENAI_API_KEY environment variable."
             )
         
         # Clean and truncate HTML
@@ -94,8 +94,8 @@ class UniversalLLMScraper:
         # Build extraction prompt
         prompt = self._build_extraction_prompt(clean_html, platform, max_reviews)
         
-        # Call Claude API
-        extracted_json = await self._call_claude_api(prompt)
+        # Call OpenAI API
+        extracted_json = await self._call_openai_api(prompt)
         
         # Parse and validate response
         return self._parse_llm_response(extracted_json)
@@ -119,7 +119,7 @@ class UniversalLLMScraper:
         return clean_html
     
     def _build_extraction_prompt(self, html: str, platform: str, max_reviews: int) -> str:
-        """Build prompt for Claude to extract review data"""
+        """Build prompt for ChatGPT to extract review data"""
         return f"""Extract product review data from this {platform} e-commerce page HTML.
 
 Return ONLY a JSON object with this exact structure (no markdown, no explanation):
@@ -166,32 +166,40 @@ If you cannot find certain fields, use null or 0 as appropriate.
 HTML:
 {html}"""
     
-    async def _call_claude_api(self, prompt: str) -> str:
-        """Call Claude API to extract data"""
-        async with httpx.AsyncClient(timeout=settings.CLAUDE_TIMEOUT) as client:
+    async def _call_openai_api(self, prompt: str) -> str:
+        """Call OpenAI API to extract data"""
+        async with httpx.AsyncClient(timeout=settings.OPENAI_TIMEOUT) as client:
             response = await client.post(
-                "https://api.anthropic.com/v1/messages",
+                "https://api.openai.com/v1/chat/completions",
                 headers={
-                    "x-api-key": settings.ANTHROPIC_API_KEY,
-                    "anthropic-version": settings.CLAUDE_API_VERSION,
-                    "content-type": "application/json"
+                    "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
+                    "Content-Type": "application/json"
                 },
                 json={
-                    "model": settings.CLAUDE_MODEL,
-                    "max_tokens": settings.CLAUDE_MAX_TOKENS,
+                    "model": settings.OPENAI_MODEL,
                     "messages": [
-                        {"role": "user", "content": prompt}
-                    ]
+                        {
+                            "role": "system",
+                            "content": "You are a precise data extraction assistant. Extract review data from HTML and return only valid JSON."
+                        },
+                        {
+                            "role": "user",
+                            "content": prompt
+                        }
+                    ],
+                    "temperature": settings.OPENAI_TEMPERATURE,
+                    "max_tokens": settings.OPENAI_MAX_TOKENS,
+                    "response_format": {"type": "json_object"}  # Ensures JSON response
                 }
             )
             
             if response.status_code != 200:
-                raise Exception(f"Claude API failed: {response.status_code} - {response.text}")
+                raise Exception(f"OpenAI API failed: {response.status_code} - {response.text}")
             
             result = response.json()
-            content = result["content"][0]["text"]
+            content = result["choices"][0]["message"]["content"]
             
-            logger.info("Successfully extracted data via Claude API")
+            logger.info("Successfully extracted data via OpenAI API")
             return content
     
     def _parse_llm_response(self, content: str) -> Dict[str, Any]:

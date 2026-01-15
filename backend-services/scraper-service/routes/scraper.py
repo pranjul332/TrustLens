@@ -18,7 +18,7 @@ async def scrape_reviews(request: ScrapeRequest):
     """
     Scrape product reviews with hybrid approach:
     - Amazon/Flipkart: Fast manual scraping (free)
-    - Other sites: AI-powered universal scraping (ScrapingBee + Claude)
+    - Other sites: AI-powered universal scraping (ScrapingBee + ChatGPT)
     - Mock mode: Testing without external requests
     
     Set force_llm=true to use LLM scraping for Amazon/Flipkart
@@ -58,8 +58,8 @@ async def scrape_reviews(request: ScrapeRequest):
                 missing = []
                 if not settings.is_scrapingbee_configured:
                     missing.append("SCRAPINGBEE_API_KEY")
-                if not settings.is_anthropic_configured:
-                    missing.append("ANTHROPIC_API_KEY")
+                if not settings.is_openai_configured:
+                    missing.append("OPENAI_API_KEY")
                 
                 raise HTTPException(
                     status_code=status.HTTP_501_NOT_IMPLEMENTED,

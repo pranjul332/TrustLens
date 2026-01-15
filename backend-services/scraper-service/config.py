@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     
     # API Keys for LLM Scraping
     SCRAPINGBEE_API_KEY: str = os.getenv("SCRAPINGBEE_API_KEY", "YOUR_API_KEY_HERE")
-    ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "YOUR_API_KEY_HERE")
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "YOUR_API_KEY_HERE")
     
     # ScrapingBee Configuration
     SCRAPINGBEE_URL: str = "https://app.scrapingbee.com/api/v1/"
@@ -25,11 +25,11 @@ class Settings(BaseSettings):
     SCRAPINGBEE_PREMIUM_PROXY: bool = False
     SCRAPINGBEE_COUNTRY_CODE: str = "in"  # India
     
-    # Claude API Configuration
-    CLAUDE_MODEL: str = "claude-sonnet-4-20250514"
-    CLAUDE_MAX_TOKENS: int = 4000
-    CLAUDE_API_VERSION: str = "2023-06-01"
-    CLAUDE_TIMEOUT: float = 60.0
+    # OpenAI API Configuration
+    OPENAI_MODEL: str = "gpt-4o-mini"
+    OPENAI_MAX_TOKENS: int = 4000
+    OPENAI_TEMPERATURE: float = 0.1  # Low temperature for consistent extraction
+    OPENAI_TIMEOUT: float = 60.0
     
     # HTML Processing
     MAX_HTML_LENGTH: int = 50000  # Characters to send to LLM
@@ -58,14 +58,14 @@ class Settings(BaseSettings):
         return self.SCRAPINGBEE_API_KEY != "YOUR_API_KEY_HERE"
     
     @property
-    def is_anthropic_configured(self) -> bool:
-        """Check if Anthropic API is configured"""
-        return self.ANTHROPIC_API_KEY != "YOUR_API_KEY_HERE"
+    def is_openai_configured(self) -> bool:
+        """Check if OpenAI API is configured"""
+        return self.OPENAI_API_KEY != "YOUR_API_KEY_HERE"
     
     @property
     def is_llm_scraping_enabled(self) -> bool:
         """Check if LLM scraping is fully configured"""
-        return self.is_scrapingbee_configured and self.is_anthropic_configured
+        return self.is_scrapingbee_configured and self.is_openai_configured
     
     class Config:
         env_file = ".env"

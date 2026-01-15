@@ -34,8 +34,10 @@ async def get_supported_platforms():
             {
                 "name": "Universal (Any E-commerce Site)",
                 "method": "llm",
+                "provider": "OpenAI ChatGPT",
+                "model": "gpt-4o",
                 "speed": "moderate (5-10 sec)",
-                "cost": "ScrapingBee free tier: 1,000 requests/month",
+                "cost": "ScrapingBee free tier: 1,000 requests/month + OpenAI API costs",
                 "reliability": "excellent",
                 "supported_platforms": [
                     "Myntra",
@@ -47,13 +49,14 @@ async def get_supported_platforms():
                 ],
                 "requirements": [
                     "SCRAPINGBEE_API_KEY",
-                    "ANTHROPIC_API_KEY"
+                    "OPENAI_API_KEY"
                 ]
             }
         ],
         "notes": [
             "For Amazon/Flipkart, manual scraping is used by default (faster, free)",
             "Use force_llm=true in request to test LLM scraping on Amazon/Flipkart",
+            "LLM scraping uses OpenAI's ChatGPT (gpt-4o model)",
             "LLM scraping works with any e-commerce site, even unknown ones",
             "Set USE_MOCK_SCRAPER=true for testing without external requests"
         ]
