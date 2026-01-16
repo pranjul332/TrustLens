@@ -1,12 +1,12 @@
 """
-NLP analysis routes
+NLP analysis routes - ML-powered
 """
 from fastapi import APIRouter, HTTPException, status
 import logging
 
 from models import AnalyzeRequest, NLPResponse, SentimentRequest, SentimentResponse
 from pipeline import NLPPipeline
-from analyzers import SentimentAnalyzer
+from analyzers import MLSentimentAnalyzer
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -15,7 +15,13 @@ router = APIRouter()
 @router.post("/analyze", response_model=NLPResponse)
 async def analyze_reviews(request: AnalyzeRequest):
     """
-    Analyze reviews for sentiment, fake patterns, and similarity
+    ML-powered review analysis
+    
+    Features:
+    - VADER + TextBlob sentiment analysis
+    - TF-IDF based similarity detection
+    - Multi-feature fake review detection
+    - Advanced text quality metrics
     
     Returns:
     - Individual review analyses
@@ -29,15 +35,16 @@ async def analyze_reviews(request: AnalyzeRequest):
                 detail="No reviews provided"
             )
         
-        # Initialize pipeline
+        # Initialize ML pipeline
         pipeline = NLPPipeline()
         
         # Run analysis
         result = pipeline.analyze_reviews(request.reviews)
         
         logger.info(
-            f"NLP analysis complete: {result.total_reviews} reviews, "
-            f"avg fake prob: {result.aggregate_metrics.get('average_fake_probability', 0)}"
+            f"ML Analysis complete: {result.total_reviews} reviews, "
+            f"avg fake prob: {result.aggregate_metrics.get('average_fake_probability', 0):.3f}, "
+            f"clusters: {len(result.similarity_clusters)}"
         )
         
         return result
@@ -45,7 +52,7 @@ async def analyze_reviews(request: AnalyzeRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"NLP analysis failed: {str(e)}")
+        logger.error(f"ML analysis failed: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Analysis failed: {str(e)}"
@@ -54,15 +61,18 @@ async def analyze_reviews(request: AnalyzeRequest):
 
 @router.post("/sentiment", response_model=SentimentResponse)
 async def analyze_sentiment(request: SentimentRequest):
-    """Quick sentiment analysis for a single text"""
+    """Quick ML-based sentiment analysis"""
     try:
-        analyzer = SentimentAnalyzer()
-        score, label = analyzer.analyze(request.text)
+        analyzer = MLSentimentAnalyzer()
+        score, label, confidence = analyzer.analyze(request.text)
+        subjectivity = analyzer.get_subjectivity(request.text)
         
         return SentimentResponse(
             text=request.text[:100],
             sentiment_score=score,
-            sentiment_label=label
+            sentiment_label=label,
+            confidence=confidence,
+            subjectivity=subjectivity
         )
     except Exception as e:
         logger.error(f"Sentiment analysis failed: {str(e)}")

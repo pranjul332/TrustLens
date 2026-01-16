@@ -1,6 +1,6 @@
 """
-NLP Service - Main Application Entry Point
-Sentiment analysis, fake review detection, and text similarity
+ML-Powered NLP Service - Main Application Entry Point
+Advanced Natural Language Processing using Machine Learning
 """
 from fastapi import FastAPI
 import logging
@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="NLP Service",
-    version="1.0.0",
-    description="Natural Language Processing for review analysis"
+    title="ML-Powered NLP Service",
+    version="2.0.0",
+    description="Advanced Natural Language Processing using Machine Learning"
 )
 
 # Include routers
@@ -24,18 +24,22 @@ app.include_router(health.router, tags=["Health"])
 
 @app.get("/")
 async def root():
-    """Root endpoint with service capabilities"""
+    """Root endpoint with ML service capabilities"""
     return {
-        "service": "NLP Service",
+        "service": "ML-Powered NLP Service",
         "status": "healthy",
-        "version": "1.0.0",
-        "capabilities": [
-            "sentiment_analysis",
-            "fake_detection",
-            "similarity_detection",
-            "text_quality_analysis",
-            "promotional_scoring"
-        ]
+        "version": "2.0.0",
+        "ml_features": [
+            "VADER sentiment analysis",
+            "TextBlob sentiment & subjectivity",
+            "TF-IDF vectorization",
+            "Cosine similarity clustering",
+            "Multi-feature fake detection",
+            "Advanced text quality metrics",
+            "Readability scoring",
+            "Lexical diversity analysis"
+        ],
+        "libraries": ["sklearn", "nltk", "textblob", "numpy", "pandas"]
     }
 
 if __name__ == "__main__":

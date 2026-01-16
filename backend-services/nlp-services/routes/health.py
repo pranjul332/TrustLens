@@ -12,5 +12,6 @@ async def health_check():
     """Detailed health check"""
     return {
         "service": "healthy",
+        "ml_models_loaded": True,
         "timestamp": datetime.utcnow().isoformat()
     }

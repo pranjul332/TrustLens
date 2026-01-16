@@ -8,9 +8,6 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application settings"""
     
-    # ML Model Configuration
-    USE_ML_MODELS: bool = True  # Toggle between rule-based and ML models
-    
     # Similarity Detection
     SIMILARITY_THRESHOLD: float = 0.75  # TF-IDF cosine similarity threshold
     JACCARD_THRESHOLD: float = 0.7  # Fallback Jaccard threshold
