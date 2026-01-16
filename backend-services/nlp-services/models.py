@@ -18,12 +18,16 @@ class AnalyzeRequest(BaseModel):
 
 class ReviewAnalysis(BaseModel):
     review_id: str
-    sentiment_score: float  # -1 to 1 (negative to positive)
+    sentiment_score: float  # -1 to 1
     sentiment_label: str  # positive, negative, neutral
+    sentiment_confidence: float  # 0 to 1 (ML only)
     fake_probability: float  # 0 to 1
-    flags: List[str]  # List of detected issues
+    flags: List[str]
     text_quality_score: float  # 0 to 1
     promotional_score: float  # 0 to 1
+    readability_score: float  # 0 to 1 (ML only)
+    subjectivity_score: float  # 0 to 1 (ML only)
+    lexical_diversity: float  # 0 to 1 (ML only)
 
 
 class SimilarityCluster(BaseModel):
@@ -50,3 +54,5 @@ class SentimentResponse(BaseModel):
     text: str
     sentiment_score: float
     sentiment_label: str
+    confidence: Optional[float] = None
+    subjectivity: Optional[float] = None
