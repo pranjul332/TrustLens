@@ -1,70 +1,86 @@
 """
-Sentiment analysis component
+ML-based sentiment analysis using VADER and TextBlob
 """
-import re
 from typing import Tuple
+import nltk
+from nltk.sentiment import SentimentIntensityAnalyzer
+from textblob import TextBlob
 
 from config import settings
+from preprocessor import TextPreprocessor
+
+# Download VADER lexicon
+try:
+    nltk.data.find('sentiment/vader_lexicon.zip')
+except LookupError:
+    nltk.download('vader_lexicon', quiet=True)
 
 
-class SentimentAnalyzer:
-    """Rule-based sentiment analyzer"""
+class MLSentimentAnalyzer:
+    """ML-based sentiment analysis using VADER and TextBlob"""
     
     def __init__(self):
-        self.positive_words = settings.POSITIVE_WORDS
-        self.negative_words = settings.NEGATIVE_WORDS
-        self.intensifiers = settings.INTENSIFIER_WORDS
+        # VADER for social media style text
+        self.vader = SentimentIntensityAnalyzer()
+        self.preprocessor = TextPreprocessor()
     
-    def analyze(self, text: str) -> Tuple[float, str]:
+    def analyze(self, text: str) -> Tuple[float, str, float]:
         """
-        Analyze sentiment of text
+        Analyze sentiment using multiple methods
         
         Args:
             text: Review text to analyze
         
         Returns:
-            Tuple of (score, label)
-            - score: -1 (very negative) to 1 (very positive)
+            Tuple of (score, label, confidence)
+            - score: -1 to 1 (negative to positive)
             - label: 'positive', 'negative', or 'neutral'
+            - confidence: 0 to 1 (agreement between methods)
         """
         if not text or len(text.strip()) < 5:
-            return 0.0, 'neutral'
+            return 0.0, 'neutral', 0.5
         
-        # Clean and tokenize
-        text_lower = text.lower()
-        words = re.findall(r'\b\w+\b', text_lower)
+        # VADER analysis (better for informal text)
+        vader_scores = self.vader.polarity_scores(text)
+        vader_compound = vader_scores['compound']  # -1 to 1
         
-        if not words:
-            return 0.0, 'neutral'
+        # TextBlob analysis (better for formal text)
+        try:
+            blob = TextBlob(text)
+            textblob_polarity = blob.sentiment.polarity  # -1 to 1
+        except:
+            textblob_polarity = 0.0
         
-        # Count positive and negative words
-        positive_count = sum(1 for word in words if word in self.positive_words)
-        negative_count = sum(1 for word in words if word in self.negative_words)
+        # Ensemble: weighted average
+        score = (vader_compound * settings.VADER_WEIGHT + 
+                textblob_polarity * settings.TEXTBLOB_WEIGHT)
         
-        # Check for intensifiers (multiply impact)
-        intensifier_multiplier = 1.0
-        for word in words:
-            if word in self.intensifiers:
-                intensifier_multiplier += 0.2
-        
-        # Calculate score
-        total_sentiment_words = positive_count + negative_count
-        if total_sentiment_words == 0:
-            return 0.0, 'neutral'
-        
-        # Weighted score
-        score = (positive_count - negative_count) / len(words)
-        score = score * intensifier_multiplier
-        
-        # Normalize to -1 to 1
-        score = max(-1.0, min(1.0, score * 10))
+        # Calculate confidence based on agreement
+        agreement = 1 - abs(vader_compound - textblob_polarity) / 2
+        confidence = min(0.95, max(0.5, agreement))
         
         # Determine label
-        if score > 0.2:
+        if score > settings.POSITIVE_THRESHOLD:
             label = 'positive'
-        elif score < -0.2:
+        elif score < settings.NEGATIVE_THRESHOLD:
             label = 'negative'
         else:
             label = 'neutral'
         
-        return round(score, 3), label
+        return round(score, 3), label, round(confidence, 3)
+    
+    def get_subjectivity(self, text: str) -> float:
+        """
+        Measure text subjectivity
+        
+        Args:
+            text: Review text to analyze
+        
+        Returns:
+            Score from 0 (objective) to 1 (subjective)
+        """
+        try:
+            blob = TextBlob(text)
+            return round(blob.sentiment.subjectivity, 3)
+        except:
+            return 0.5
