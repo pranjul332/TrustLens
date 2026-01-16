@@ -8,7 +8,7 @@ import logging
 
 from models import Review, TemporalPattern
 from config import settings
-from utils import parse_date
+from utils.utils import parse_date
 
 logger = logging.getLogger(__name__)
 
