@@ -9,11 +9,11 @@ import pandas as pd
 
 from models import Review, ReviewAnalysis, SimilarityCluster, NLPResponse
 from analyzers import (
-    SentimentAnalyzer,
-    FakeReviewDetector,
-    TextQualityAnalyzer,
+    MLSentimentAnalyzer,
+    MLFakeReviewDetector,
+    MLTextQualityAnalyzer,
     PromotionalScorer,
-    SimilarityDetector
+    MLSimilarityDetector
 )
 from config import settings
 from preprocessor import TextPreprocessor
@@ -25,10 +25,10 @@ class NLPPipeline:
     """ML-powered NLP analysis pipeline"""
     
     def __init__(self):
-        self.sentiment_analyzer = SentimentAnalyzer()
-        self.fake_detector = FakeReviewDetector()
-        self.quality_analyzer = TextQualityAnalyzer()
-        self.similarity_detector = SimilarityDetector()
+        self.sentiment_analyzer = MLSentimentAnalyzer()
+        self.fake_detector = MLFakeReviewDetector()
+        self.quality_analyzer = MLTextQualityAnalyzer()
+        self.similarity_detector = MLSimilarityDetector()
         self.promo_scorer = PromotionalScorer()  # Rule-based (no ML version)
         self.preprocessor = TextPreprocessor()
     

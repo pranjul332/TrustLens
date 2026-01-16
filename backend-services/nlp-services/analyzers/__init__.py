@@ -1,16 +1,20 @@
 """
 NLP Analyzers package initialization
+ML-based analyzers + rule-based promotional scorer
 """
-from .sentiment import SentimentAnalyzer
-from .fake_detector import FakeReviewDetector
-from .quality import TextQualityAnalyzer
+# ML-based analyzers
+from .sentiment import MLSentimentAnalyzer
+from .fake_detector import MLFakeReviewDetector
+from .quality import MLTextQualityAnalyzer
+from .similarity import MLSimilarityDetector
+
+# Rule-based (only for features without ML version)
 from .promotional import PromotionalScorer
-from .similarity import SimilarityDetector
 
 __all__ = [
-    "SentimentAnalyzer",
-    "FakeReviewDetector", 
-    "TextQualityAnalyzer",
-    "PromotionalScorer",
-    "SimilarityDetector"
+    "MLSentimentAnalyzer",
+    "MLFakeReviewDetector",
+    "MLTextQualityAnalyzer",
+    "MLSimilarityDetector",
+    "PromotionalScorer"
 ]
