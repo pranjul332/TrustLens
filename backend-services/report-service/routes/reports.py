@@ -5,14 +5,14 @@ from fastapi import APIRouter, HTTPException, status
 from datetime import datetime, timedelta
 import logging
 
-from ..models import (
+from models import (
     StoreReportRequest,
     StoreReportResponse,
     GetReportResponse
 )
-from ..config import settings
-from ..utils import generate_url_hash
-from ..database import (
+from config import settings
+from utils.utils import generate_url_hash
+from db.database import (
     store_report_in_db,
     get_report_from_db,
     get_report_by_id,

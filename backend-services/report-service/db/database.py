@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
 import logging
 
-from .config import settings
-from .utils import generate_report_id, normalize_url
+from config import settings
+from utils.utils import generate_report_id, normalize_url
 
 logger = logging.getLogger(__name__)
 

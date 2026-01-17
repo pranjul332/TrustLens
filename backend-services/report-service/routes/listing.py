@@ -5,9 +5,9 @@ from fastapi import APIRouter, HTTPException, status
 from datetime import datetime
 import logging
 
-from ..models import ReportListItem
-from ..config import settings
-from ..database import get_all_reports
+from models import ReportListItem
+from config import settings
+from db.database import get_all_reports
 
 logger = logging.getLogger(__name__)
 

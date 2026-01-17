@@ -4,9 +4,9 @@ Main application entry point for Report Service
 from fastapi import FastAPI
 import logging
 
-from .config import settings
-from .routes import router
-from .database import connect_to_mongo, close_mongo_connection
+from config import settings
+from routes import router
+from db.database import connect_to_mongo, close_mongo_connection
 
 # Configure logging
 logging.basicConfig(

@@ -4,7 +4,7 @@ Administrative operations and maintenance endpoints
 from fastapi import APIRouter, HTTPException, status
 import logging
 
-from ..database import cleanup_expired_reports, get_stats
+from db.database import cleanup_expired_reports, get_stats
 
 logger = logging.getLogger(__name__)
 

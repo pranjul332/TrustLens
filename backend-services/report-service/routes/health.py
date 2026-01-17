@@ -4,8 +4,8 @@ Health check and status endpoints
 from fastapi import APIRouter
 from datetime import datetime
 
-from ..config import settings
-from ..database import ping_database
+from config import settings
+from db.database import ping_database
 
 router = APIRouter(tags=["Health"])
 
