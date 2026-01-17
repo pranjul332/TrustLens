@@ -24,7 +24,7 @@ export default function HomePage() {
     setLoading(true);
     // Store URL in sessionStorage and navigate
     sessionStorage.setItem("productUrl", url);
-    router.push("/analyze");
+    router.push("/result");
   };
 
   const features = [
