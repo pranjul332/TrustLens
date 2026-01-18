@@ -70,32 +70,51 @@ async def store_report_in_db(
         
         now = datetime.utcnow()
         expires_at = now + timedelta(days=ttl_days)
-        report_id = generate_report_id(url_hash, now)
         
-        document = {
-            "_id": report_id,
-            "url": url,
-            "url_hash": url_hash,
-            "normalized_url": normalize_url(url),
-            "report": report,
-            "metadata": {
-                "created_at": now,
-                "updated_at": now,
-                "expires_at": expires_at,
-                "ttl_days": ttl_days,
-                "access_count": 0,
-                "last_accessed": None
+        # Check if document already exists
+        existing_doc = await collection.find_one({"url_hash": url_hash})
+        
+        if existing_doc:
+            # Update existing document, keep the same _id
+            report_id = existing_doc["_id"]
+            
+            await collection.update_one(
+                {"url_hash": url_hash},
+                {
+                    "$set": {
+                        "url": url,
+                        "normalized_url": normalize_url(url),
+                        "report": report,
+                        "metadata.updated_at": now,
+                        "metadata.expires_at": expires_at,
+                        "metadata.ttl_days": ttl_days
+                    }
+                }
+            )
+            logger.info(f"Report updated: {report_id} (expires: {expires_at})")
+        else:
+            # Create new document
+            report_id = generate_report_id(url_hash, now)
+            
+            document = {
+                "_id": report_id,
+                "url": url,
+                "url_hash": url_hash,
+                "normalized_url": normalize_url(url),
+                "report": report,
+                "metadata": {
+                    "created_at": now,
+                    "updated_at": now,
+                    "expires_at": expires_at,
+                    "ttl_days": ttl_days,
+                    "access_count": 0,
+                    "last_accessed": None
+                }
             }
-        }
+            
+            await collection.insert_one(document)
+            logger.info(f"Report created: {report_id} (expires: {expires_at})")
         
-        # Upsert based on url_hash (update if exists, insert if not)
-        await collection.replace_one(
-            {"url_hash": url_hash},
-            document,
-            upsert=True
-        )
-        
-        logger.info(f"Report stored: {report_id} (expires: {expires_at})")
         return report_id
         
     except Exception as e:

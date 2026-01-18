@@ -30,13 +30,14 @@ class TrustScoreCalculator:
             Tuple of (trust_score, breakdown, confidence)
         """
         
-        # Extract component scores
+        # FIXED: aggregate_metrics is a dict, so use .get()
+        # But nlp_results/behavior_results are Pydantic models, so use attribute access
         nlp_fake_score = nlp_results.aggregate_metrics.get("nlp_fake_score", 0)
         behavior_fake_score = behavior_results.aggregate_metrics.get("behavior_fake_score", 0)
         
         # Calculate statistical anomaly score
         statistical_score = self._calculate_statistical_score(
-            behavior_results.rating_distribution,
+            behavior_results.rating_distribution,  # This is likely also a dict
             product_metadata
         )
         
@@ -75,13 +76,6 @@ class TrustScoreCalculator:
         """
         Calculate statistical anomaly score (0-100)
         Higher = more suspicious
-        
-        Args:
-            rating_dist: Rating distribution
-            metadata: Product metadata
-        
-        Returns:
-            Statistical anomaly score (0-100)
         """
         score = 0.0
         
@@ -119,7 +113,6 @@ class TrustScoreCalculator:
             score += 20
         
         # Signal 4: Sample size consideration
-        # Very few reviews with all 5-star is suspicious
         if total < settings.SMALL_SAMPLE_SIZE and five_star_ratio > settings.SMALL_SAMPLE_FIVE_STAR:
             score += 20
         
@@ -133,19 +126,11 @@ class TrustScoreCalculator:
     ) -> float:
         """
         Calculate confidence in the assessment (0-1)
-        Higher = more confident in the trust score
-        
-        Args:
-            nlp_results: NLP analysis results
-            behavior_results: Behavior analysis results
-            metadata: Product metadata
-        
-        Returns:
-            Confidence score (0-1)
         """
         confidence = settings.BASE_CONFIDENCE
         
-        # Factor 1: Sample size (more reviews = more confident)
+        # FIXED: Use .get() for dict fields
+        # Factor 1: Sample size
         total_reviews = behavior_results.aggregate_metrics.get("total_reviews", 0)
         if total_reviews >= settings.LARGE_SAMPLE_SIZE:
             confidence += 0.2
@@ -154,18 +139,17 @@ class TrustScoreCalculator:
         elif total_reviews >= settings.SMALL_SAMPLE_SIZE_CONF:
             confidence += 0.1
         
-        # Factor 2: Signal consistency (all signals agree)
+        # Factor 2: Signal consistency
         nlp_fake = nlp_results.aggregate_metrics.get("nlp_fake_score", 0)
         behavior_fake = behavior_results.aggregate_metrics.get("behavior_fake_score", 0)
         
-        # Calculate agreement (inverse of difference)
         score_diff = abs(nlp_fake - behavior_fake)
         if score_diff < settings.STRONG_AGREEMENT_THRESHOLD:
-            confidence += 0.2  # Strong agreement
+            confidence += 0.2
         elif score_diff < settings.MODERATE_AGREEMENT_THRESHOLD:
-            confidence += 0.1  # Moderate agreement
+            confidence += 0.1
         
-        # Factor 3: Verification rate (more verified = more confident)
+        # Factor 3: Verification rate
         verification_rate = behavior_results.aggregate_metrics.get("verification_rate", 0)
         if verification_rate > settings.HIGH_VERIFICATION_RATE:
             confidence += 0.1

@@ -2,3 +2,7 @@
 .env.*
 **/.env
 **/.env.*
+venv/
+**/venv/
+*.pkl
+__pycache__/

@@ -17,7 +17,7 @@ class Settings:
     PORT: int = 8006
     
     # MongoDB Configuration
-    MONGO_URL: str = os.getenv("MONGO_URL", "mongodb://mongodb:27017")
+    MONGO_URL: str = os.getenv("MONGO_URL", "mongodb://localhost:27017/")
     MONGO_DB: str = os.getenv("MONGO_DB", "fake_review_platform")
     REPORTS_COLLECTION: str = "analysis_reports"
     

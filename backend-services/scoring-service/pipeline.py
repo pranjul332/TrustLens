@@ -72,8 +72,8 @@ class ScoringPipeline:
         # Calculate fake review percentage
         fake_percentage = 100 - trust_score
         
-        # Get total reviews analyzed
-        total_reviews = behavior_results.aggregate_metrics.get("total_reviews", 0)
+        # Get total reviews analyzed - ACCESS AS ATTRIBUTE, NOT DICT
+        total_reviews = behavior_results.total_reviews
         
         logger.info(
             f"Final score generated: Trust={trust_score}, "
@@ -87,7 +87,7 @@ class ScoringPipeline:
             risk_level=risk_level,
             score_breakdown=breakdown,
             key_insights=insights,
-            total_reviews_analyzed=total_reviews,
+            total_reviews_analyzed=total_reviews,  # ← Now this will have the correct value
             recommendation=recommendation,
             confidence=confidence,
             timestamp=datetime.utcnow().isoformat()

@@ -6,15 +6,22 @@ from typing import List, Dict, Optional, Any
 
 
 class NLPResults(BaseModel):
+    success: Optional[bool] = True
+    total_reviews: Optional[int] = 0  # Made optional with default
+    analyses: Optional[List[Dict[str, Any]]] = []
     aggregate_metrics: Dict[str, Any]
-    similarity_clusters: List[Dict[str, Any]] = []
+    similarity_clusters: Optional[List[Dict[str, Any]]] = []
+    timestamp: Optional[str] = None
 
 
 class BehaviorResults(BaseModel):
+    success: Optional[bool] = True
+    total_reviews: Optional[int] = 0  # Made optional with default
     aggregate_metrics: Dict[str, Any]
-    temporal_patterns: List[Dict[str, Any]] = []
-    reviewer_patterns: List[Dict[str, Any]] = []
+    temporal_patterns: Optional[List[Dict[str, Any]]] = []
+    reviewer_patterns: Optional[List[Dict[str, Any]]] = []
     rating_distribution: Dict[str, Any]
+    timestamp: Optional[str] = None
 
 
 class ProductMetadata(BaseModel):

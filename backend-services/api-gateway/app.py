@@ -6,7 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 from config import settings
-from routes import auth, analysis, health
+# from routes import auth, analysis, health  # Original import
+from routes import analysis, health  # Auth commented out for now
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -29,7 +30,7 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+# app.include_router(auth.router, prefix="/auth", tags=["Authentication"])  # Auth disabled for now
 app.include_router(analysis.router, tags=["Analysis"])
 app.include_router(health.router, tags=["Health"])
 

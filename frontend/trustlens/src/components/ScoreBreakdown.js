@@ -4,24 +4,33 @@ import { motion } from "framer-motion";
 import { Brain, Activity, BarChart3 } from "lucide-react";
 
 export default function ScoreBreakdown({ breakdown }) {
+  // Add safety check and logging
+  console.log("ScoreBreakdown received:", breakdown);
+
+  // Safely extract values with defaults
+  const safeValue = (value) => {
+    const num = typeof value === "number" ? value : 0;
+    return isNaN(num) ? 0 : num;
+  };
+
   const components = [
     {
       name: "NLP Analysis",
-      value: breakdown.nlp_contribution,
+      value: safeValue(breakdown?.nlp_contribution),
       icon: Brain,
       color: "from-purple-500 to-pink-500",
       description: "Text and sentiment analysis",
     },
     {
       name: "Behavioral Patterns",
-      value: breakdown.behavior_contribution,
+      value: safeValue(breakdown?.behavior_contribution),
       icon: Activity,
       color: "from-blue-500 to-cyan-500",
       description: "Temporal and reviewer patterns",
     },
     {
       name: "Statistical Analysis",
-      value: breakdown.statistical_contribution,
+      value: safeValue(breakdown?.statistical_contribution),
       icon: BarChart3,
       color: "from-orange-500 to-red-500",
       description: "Rating distribution analysis",
@@ -70,7 +79,7 @@ export default function ScoreBreakdown({ breakdown }) {
                     className={`bg-gradient-to-r ${component.color} h-2 rounded-full`}
                     initial={{ width: 0 }}
                     animate={{
-                      width: `${(component.value / 50) * 100}%`,
+                      width: `${Math.min((component.value / 50) * 100, 100)}%`,
                     }}
                     transition={{
                       delay: 0.5 + 0.1 * index,

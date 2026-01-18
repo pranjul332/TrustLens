@@ -8,6 +8,9 @@ from models import ScrapeRequest, ScrapeResponse
 from utils.utils import detect_platform, should_use_manual_scraper
 from config import settings
 from scrapers import AmazonScraper, FlipkartScraper, UniversalLLMScraper, MockScraper
+from functools import lru_cache
+from hashlib import md5
+import time
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -32,10 +35,10 @@ async def scrape_reviews(request: ScrapeRequest):
         if settings.USE_MOCK_SCRAPER:
             logger.info(f"Using MOCK scraper (testing mode)")
             scraper = MockScraper()
-            return await scraper.scrape(request.url, request.max_reviews)
+            return await scraper.scrape(request.url, 150)
         
         # Decide scraping method
-        use_manual = should_use_manual_scraper(platform, request.force_llm)
+        use_manual = should_use_manual_scraper(platform, True)
         
         if use_manual:
             # Use fast manual scrapers for Amazon/Flipkart
@@ -48,7 +51,7 @@ async def scrape_reviews(request: ScrapeRequest):
             else:
                 raise ValueError(f"Manual scraper not available for {platform}")
             
-            return await scraper.scrape(request.url, request.max_reviews)
+            return await scraper.scrape(request.url, 150)
         else:
             # Use LLM-powered universal scraper for other platforms
             logger.info(f"Using LLM scraper for {platform}")
@@ -67,7 +70,7 @@ async def scrape_reviews(request: ScrapeRequest):
                 )
             
             scraper = UniversalLLMScraper()
-            return await scraper.scrape(request.url, request.max_reviews, platform)
+            return await scraper.scrape(request.url, 150, platform)
         
     except ValueError as e:
         raise HTTPException(
@@ -79,6 +82,30 @@ async def scrape_reviews(request: ScrapeRequest):
     except Exception as e:
         logger.exception("Scraping failed with stacktrace")
         raise HTTPException(
-        status_code=500,
-        detail="Scraping failed. Check server logs."
-    )
+            status_code=500,
+            detail=f"Scraping failed: {str(e)}"
+        )
+
+
+@router.post("/scrape/mock", response_model=ScrapeResponse)
+async def mock_scrape_reviews(request: ScrapeRequest):
+    """
+    Mock scraping endpoint for testing without external API calls.
+    
+    Returns fake review data for any URL regardless of USE_MOCK_SCRAPER setting.
+    Useful for:
+    - Testing API integration
+    - Development without API keys
+    - Demo purposes
+    """
+    try:
+        logger.info(f"Mock scrape requested for: {request.url}")
+        scraper = MockScraper()
+        return await scraper.scrape(request.url, request.max_reviews)
+        
+    except Exception as e:
+        logger.exception("Mock scraping failed with stacktrace")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Mock scraping failed: {str(e)}"
+        )

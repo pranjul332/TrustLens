@@ -2,41 +2,65 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Loader2 } from "lucide-react";
+import { Search, Loader2, AlertCircle, Globe } from "lucide-react";
+import { validateProductUrl } from "@/lib/api";
 
 export default function URLInput({ onAnalyze, loading }) {
   const [url, setUrl] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (url.trim()) {
-      onAnalyze(url.trim());
+    setError("");
+
+    if (!url.trim()) {
+      setError("Please enter a product URL");
+      return;
     }
+
+    // Validate URL
+    const validation = validateProductUrl(url);
+    if (!validation.valid) {
+      setError(validation.error);
+      return;
+    }
+
+    // Call the analysis function
+    onAnalyze(url);
   };
 
   return (
-    <motion.form
-      onSubmit={handleSubmit}
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
       className="max-w-3xl mx-auto"
     >
-      <div className="relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-lg opacity-25 group-hover:opacity-40 transition-opacity" />
-        <div className="relative flex items-center bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden shadow-2xl">
+      <form onSubmit={handleSubmit} className="relative">
+        <div className="relative group">
           <input
-            type="url"
+            type="text"
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Paste Amazon, Flipkart, or Myntra product URL..."
-            className="flex-1 bg-transparent text-white placeholder-gray-400 px-6 py-5 outline-none text-lg"
-            required
+            onChange={(e) => {
+              setUrl(e.target.value);
+              setError(""); // Clear error on input
+            }}
+            placeholder="Paste any product URL from any e-commerce site"
+            disabled={loading}
+            className={`w-full px-6 py-5 pr-40 rounded-2xl bg-white/10 backdrop-blur-md border-2 ${
+              error
+                ? "border-red-500/50 focus:border-red-500"
+                : "border-white/20 focus:border-purple-500"
+            } text-white placeholder-gray-400 focus:outline-none transition-all text-lg ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           />
           <button
             type="submit"
-            disabled={loading || !url.trim()}
-            className="m-2 px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center space-x-2"
+            disabled={loading}
+            className={`absolute right-2 top-1/2 -translate-y-1/2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center space-x-2 ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             {loading ? (
               <>
@@ -51,11 +75,27 @@ export default function URLInput({ onAnalyze, loading }) {
             )}
           </button>
         </div>
-      </div>
 
-      <p className="text-gray-400 text-sm mt-4 text-center">
-        Supports Amazon India, Flipkart, and Myntra product pages
-      </p>
-    </motion.form>
+        {/* Error Message */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-3 flex items-center space-x-2 text-red-400 text-sm"
+          >
+            <AlertCircle className="w-4 h-4" />
+            <span>{error}</span>
+          </motion.div>
+        )}
+
+        {/* Supported Platforms Info */}
+        <div className="mt-4 flex items-center justify-center space-x-4 text-sm text-gray-400">
+          <Globe className="w-4 h-4" />
+          <span>
+            Works with Amazon, Flipkart, Myntra, Walmart, eBay, and more
+          </span>
+        </div>
+      </form>
+    </motion.div>
   );
 }

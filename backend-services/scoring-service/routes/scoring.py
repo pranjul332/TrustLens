@@ -12,28 +12,26 @@ router = APIRouter()
 
 
 @router.post("/calculate-score", response_model=ScoreResponse)
-async def calculate_score(request: ScoreRequest):
+async def calculate_score(request: dict):  # ← Changed to dict temporarily
     """
     Calculate final trust score from NLP, Behavior, and Statistical signals
-    
-    Combines:
-    - NLP fake detection (50% weight)
-    - Behavioral patterns (30% weight)
-    - Statistical anomalies (20% weight)
-    
-    Returns:
-    - Trust score (0-100, higher = more trustworthy)
-    - Risk level (low/medium/high/critical)
-    - Detailed insights
-    - Purchase recommendation
-    - Confidence score
     """
     try:
-        # Validate inputs
-        if not request.nlp_results or not request.behavior_results:
+        # Log the raw incoming data
+        logger.info(f"Raw request keys: {request.keys()}")
+        logger.info(f"NLP results keys: {request.get('nlp_results', {}).keys() if isinstance(request.get('nlp_results'), dict) else 'NOT A DICT'}")
+        logger.info(f"Behavior results keys: {request.get('behavior_results', {}).keys() if isinstance(request.get('behavior_results'), dict) else 'NOT A DICT'}")
+        logger.info(f"Product metadata keys: {request.get('product_metadata', {}).keys() if isinstance(request.get('product_metadata'), dict) else 'NOT A DICT'}")
+        
+        # Try to parse with Pydantic
+        try:
+            score_request = ScoreRequest(**request)
+            logger.info("✅ Pydantic validation passed!")
+        except Exception as e:
+            logger.error(f"❌ Pydantic validation failed: {str(e)}")
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Missing required analysis results"
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=str(e)
             )
         
         # Initialize pipeline
@@ -41,9 +39,9 @@ async def calculate_score(request: ScoreRequest):
         
         # Generate final score
         result = pipeline.generate_final_score(
-            request.nlp_results,
-            request.behavior_results,
-            request.product_metadata
+            score_request.nlp_results,
+            score_request.behavior_results,
+            score_request.product_metadata
         )
         
         logger.info(

@@ -68,6 +68,7 @@ class UniversalLLMScraper:
             'url': url,
             'render_js': str(settings.SCRAPINGBEE_RENDER_JS).lower(),
             'premium_proxy': str(settings.SCRAPINGBEE_PREMIUM_PROXY).lower(),
+            'stealth_proxy': str(settings.SCRAPINGBEE_STEALTH_PROXY).lower(),
             'country_code': settings.SCRAPINGBEE_COUNTRY_CODE
         }
         

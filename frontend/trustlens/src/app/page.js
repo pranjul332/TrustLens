@@ -7,24 +7,24 @@ import { Shield, Search, TrendingUp, AlertCircle } from "lucide-react";
 import ProductCarousel from "@/components/ProductCarousel";
 import URLInput from "@/components/URLInput";
 import FeatureCard from "@/components/FeatureCard";
-import { useAuth0 } from "@auth0/auth0-react";
-import AuthButton from "@/components/AuthButton";
+// import { useAuth0 } from "@auth0/auth0-react";
+// import AuthButton from "@/components/AuthButton";
 
 export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  // const { isAuthenticated, loginWithRedirect } = useAuth0();
 
   const handleAnalyze = async (url) => {
-    if (!isAuthenticated) {
-      loginWithRedirect();
-      return;
-    }
+    // if (!isAuthenticated) {
+    //   loginWithRedirect();
+    //   return;
+    // }
 
     setLoading(true);
     // Store URL in sessionStorage and navigate
     sessionStorage.setItem("productUrl", url);
-    router.push("/result");
+    router.push("/pages/result");
   };
 
   const features = [
@@ -72,8 +72,6 @@ export default function HomePage() {
         />
       </div>
 
-      
-
       {/* Header */}
       <header className="relative z-10 border-b border-white/10 backdrop-blur-lg bg-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -89,7 +87,7 @@ export default function HomePage() {
               <span className="text-2xl font-bold text-white">TrustScore</span>
             </motion.div>
 
-            <AuthButton />
+            {/* <AuthButton /> */}
           </div>
         </div>
       </header>
@@ -114,8 +112,8 @@ export default function HomePage() {
               AI-Powered Review Analysis
             </span>
           </motion.div>
-{/* Product Carousel Background */}
-      <ProductCarousel />
+          {/* Product Carousel Background */}
+          <ProductCarousel />
           <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
             Don't Get Fooled by
             <span className="block bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 text-transparent bg-clip-text">

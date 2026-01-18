@@ -22,7 +22,8 @@ class Settings(BaseSettings):
     SCRAPINGBEE_URL: str = "https://app.scrapingbee.com/api/v1/"
     SCRAPINGBEE_TIMEOUT: float = 60.0
     SCRAPINGBEE_RENDER_JS: bool = True
-    SCRAPINGBEE_PREMIUM_PROXY: bool = False
+    SCRAPINGBEE_PREMIUM_PROXY: bool = True
+    SCRAPINGBEE_STEALTH_PROXY: bool = True
     SCRAPINGBEE_COUNTRY_CODE: str = "in"  # India
     
     # OpenAI API Configuration
