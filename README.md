@@ -1,4 +1,4 @@
-# 🛡️ TrustScore - AI-Powered Fake Review Intelligence Platform
+# 🛡️ Trust-Lens - AI-Powered Fake Review Intelligence Platform
 
 > **Unmask the truth behind product reviews with advanced AI analysis**
 
