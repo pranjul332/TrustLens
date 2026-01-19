@@ -58,7 +58,7 @@ async def analyze_product(
             # Step 2: Scrape reviews (Scraper Service)
             logger.info("Initiating scraping...")
             scrape_response = await client.post(
-                f"{settings.SERVICES['scraper']}/scrape",
+                f"{settings.SERVICES['scraper']}/scrape/mock",
                 json={"url": request.product_url}
             )
             

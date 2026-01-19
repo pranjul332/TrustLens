@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Shield, Search, TrendingUp, AlertCircle } from "lucide-react";
+import { Shield, Search, TrendingUp, AlertCircle,Lens, Scan, Focus } from "lucide-react";
 import ProductCarousel from "@/components/ProductCarousel";
 import URLInput from "@/components/URLInput";
 import FeatureCard from "@/components/FeatureCard";
@@ -74,7 +74,7 @@ export default function HomePage() {
 
       {/* Header */}
       <header className="relative z-10 border-b border-white/10 backdrop-blur-lg bg-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:mx-0 py-4">
           <div className="flex justify-between items-center">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -82,9 +82,9 @@ export default function HomePage() {
               className="flex items-center space-x-3"
             >
               <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <Shield className="w-6 h-6 text-white" />
+                <Focus className="w-6 h-6 text-white" />
               </div>
-              <span className="text-2xl font-bold text-white">TrustScore</span>
+              <span className="text-2xl font-bold text-white">TrustLens</span>
             </motion.div>
 
             {/* <AuthButton /> */}
@@ -217,18 +217,6 @@ export default function HomePage() {
           </div>
         </motion.div>
       </main>
-
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 backdrop-blur-lg bg-white/5 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-gray-400 text-sm">
-            <p>© 2026 TrustScore. Powered by Advanced AI & Machine Learning.</p>
-            <p className="mt-2">
-              Helping millions make smarter purchase decisions.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

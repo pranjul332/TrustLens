@@ -1,29 +1,28 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Optional
 
 class Settings(BaseSettings):
-    # JWT
-    # JWT_SECRET: str = "your-secret-key-change-in-production"
-    # JWT_ALGORITHM: str = "HS256"
-    # JWT_EXPIRATION_HOURS: int = 24
-
+    # Environment
+    ENVIRONMENT: str
+    
     # CORS (STRING, not list)
-    CORS_ORIGINS: str = "http://localhost:3000"
-    ENVIRONMENT: str = "development"
+    CORS_ORIGINS: str
     
     # Rate Limiting
-    RATE_LIMIT_REQUESTS: int = 10
-    RATE_LIMIT_WINDOW: int = 60
+    RATE_LIMIT_REQUESTS: int
+    RATE_LIMIT_WINDOW: int
 
-    # Services
-    URL_CACHE_SERVICE: str = "http://url-cache-service:8001"
-    SCRAPER_SERVICE: str = "http://scraper-service:8002"
-    NLP_SERVICE: str = "http://nlp-service:8003"
-    BEHAVIOR_SERVICE: str = "http://behavior-service:8004"
-    SCORING_SERVICE: str = "http://scoring-service:8005"
-    REPORT_SERVICE: str = "http://report-service:8006"
+    # Service URLs
+    URL_CACHE_SERVICE: str
+    SCRAPER_SERVICE: str
+    NLP_SERVICE: str
+    BEHAVIOR_SERVICE: str
+    SCORING_SERVICE: str
+    REPORT_SERVICE: str
 
     @property
     def cors_origins_list(self) -> list[str]:
+        """Convert comma-separated CORS origins to list"""
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
 
     @property
@@ -38,6 +37,11 @@ class Settings(BaseSettings):
             'report': self.REPORT_SERVICE
         }
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding='utf-8',
+        case_sensitive=True,
+        extra='ignore'
+    )
 
 settings = Settings()

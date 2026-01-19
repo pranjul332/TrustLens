@@ -1,17 +1,21 @@
 import os
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class Settings(BaseSettings):
     """Application settings"""
 
     # MongoDB Configuration
-    MONGO_URI: str = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
-    MONGO_DB: str = os.getenv("MONGO_DB", "fake_review_platform")
-    CACHE_COLLECTION: str = "report_cache"
+    MONGO_URI: str = os.getenv("MONGO_URI")
+    MONGO_DB: str = os.getenv("MONGO_DB")
+    CACHE_COLLECTION: str = os.getenv("CACHE_COLLECTION")
     
     # Cache TTL Configuration
-    CACHE_TTL_DAYS: int = int(os.getenv("CACHE_TTL_DAYS", "7"))
+    CACHE_TTL_DAYS: int = int(os.getenv("CACHE_TTL_DAYS"))
     
     # Tracking parameters to remove during URL normalization
     TRACKING_PARAMS: set = {
