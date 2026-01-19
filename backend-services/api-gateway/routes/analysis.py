@@ -56,9 +56,10 @@ async def analyze_product(
                     logger.warning(f"Cache check failed: {str(e)}")
             
             # Step 2: Scrape reviews (Scraper Service)
-            logger.info("Initiating scraping...")
+            # USING MOCK ENDPOINT FOR TESTING - Change to /scrape for production
+            logger.info("Initiating MOCK scraping for testing...")
             scrape_response = await client.post(
-                f"{settings.SERVICES['scraper']}/scrape/mock",
+                f"{settings.SERVICES['scraper']}/scrape/mock",  # ← Using mock endpoint
                 json={"url": request.product_url}
             )
             
